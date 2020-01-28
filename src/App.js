@@ -59,7 +59,6 @@ class App extends React.Component {
             }
           );
         });
-        console.log('soy el de afuera:',this.state);
       } else {
         this.setState({ currentUser: userAuth });
       }
