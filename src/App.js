@@ -11,14 +11,13 @@ import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
 
 import Header from "./components/header/header.component";
 
-class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      currentUser: null
-    };
-  }
+/*connect es un componente de orden superior,
+eso nos permite modificar nuestro componente
+para tener acceso a cosas relacionadas con redux.*/
+import { connect } from "react-redux";
+import { setCurrentUser } from "./redux/user/user.action";
 
+class App extends React.Component {
   unSubscribeFormAuth = null;
 
   componentDidMount() {
@@ -37,31 +36,23 @@ class App extends React.Component {
     se crea la propiedad "unSubscribeFormAuth" que esta arriba.
     */
 
+    const { setCurrentUser } = this.props;
+
     this.unSubscribeFormAuth = auth.onAuthStateChanged(async userAuth => {
       /*Si el usuario esta autenticado (inicio sesión) */
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
         /*Todo lo referente a Snapshot es solo para consultar y/o verificar si existe algo*/
         userRef.onSnapshot(snapShot => {
-          /*El método data obtiene todos los atributos del objeto guardados en firestore,
-          ejemplo console.log(snapShot.data())*/
-          this.setState(
-            {
-              currentUser: {
-                id: snapShot.id,
-                ...snapShot.data()
-              }
-            },
-            /*Se usa esta segunda funcion de flecha porque solo así nos aseguramos de que
-            se termino de ejecutar la función asincrona del setState */
-            () => {
-              console.log(this.state);
-            }
-          );
+          /*El método data obtiene todos los atributos del objeto guardados en firestore*/
+          setCurrentUser({
+            id: snapShot.id,
+            ...snapShot.data()
+          });
         });
-      } else {
-        this.setState({ currentUser: userAuth });
       }
+
+      setCurrentUser(userAuth);
     });
   }
 
@@ -79,7 +70,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Header currentUser={this.state.currentUser} />
+        <Header />
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="/shop" component={ShopPage} />
@@ -90,4 +81,9 @@ class App extends React.Component {
   }
 }
 
-export default App;
+/*Es una función que obtiene esta propiedad de envío*/
+const mapDispatchToProps = dispatch => ({
+  setCurrentUser: user => dispatch(setCurrentUser(user))
+});
+
+export default connect(null, mapDispatchToProps)(App);
