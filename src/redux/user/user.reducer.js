@@ -1,3 +1,5 @@
+import { UserActionType } from "./user.types";
+
 /*Un reductor es en realidad solo una función que obtiene dos propiedades, 
 obtiene un objeto de estado que representa el último estado o un estado inicial,
 y luego recibe una acción que la acción es solo un objeto que tiene un tipo que
@@ -11,7 +13,7 @@ const INITIAL_STATE = {
 
 const userReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case "SET_CURRENT_USER":
+    case UserActionType.SET_CURRENT_USER:
       return {
         ...state,
         currentUser: action.payload
