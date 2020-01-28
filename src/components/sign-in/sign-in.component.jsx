@@ -4,9 +4,9 @@ import CustomButton from "../custom-button/custom-button.component";
 
 import { signInWithGoogle } from "../../firebase/firebase.utils";
 
-import "./sing-in.styles.scss";
+import "./sign-in.styles.scss";
 
-class SingIn extends React.Component {
+class SignIn extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -61,4 +61,4 @@ class SingIn extends React.Component {
   }
 }
 
-export default SingIn;
+export default SignIn;

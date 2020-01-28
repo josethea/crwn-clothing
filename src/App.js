@@ -5,9 +5,9 @@ import "./App.css";
 
 import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
-import SingInAndSingUpPage from "./pages/sing-in-and-sing-up/sing-in-and-sing-up.component";
+import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 
-import { auth } from "./firebase/firebase.utils";
+import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
 
 import Header from "./components/header/header.component";
 
@@ -37,9 +37,32 @@ class App extends React.Component {
     se crea la propiedad "unSubscribeFormAuth" que esta arriba.
     */
 
-    this.unSubscribeFormAuth = auth.onAuthStateChanged(user => {
-      this.setState({ currentUser: user });
-      console.log(user);
+    this.unSubscribeFormAuth = auth.onAuthStateChanged(async userAuth => {
+      /*Si el usuario esta autenticado (inicio sesión) */
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        /*Todo lo referente a Snapshot es solo para consultar y/o verificar si existe algo*/
+        userRef.onSnapshot(snapShot => {
+          /*El método data obtiene todos los atributos del objeto guardados en firestore,
+          ejemplo console.log(snapShot.data())*/
+          this.setState(
+            {
+              currentUser: {
+                id: snapShot.id,
+                ...snapShot.data()
+              }
+            },
+            /*Se usa esta segunda funcion de flecha porque solo así nos aseguramos de que
+            se termino de ejecutar la función asincrona del setState */
+            () => {
+              console.log(this.state);
+            }
+          );
+        });
+        console.log('soy el de afuera:',this.state);
+      } else {
+        this.setState({ currentUser: userAuth });
+      }
     });
   }
 
@@ -61,7 +84,7 @@ class App extends React.Component {
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="/shop" component={ShopPage} />
-          <Route path="/signin" component={SingInAndSingUpPage} />
+          <Route path="/signin" component={SignInAndSignUpPage} />
         </Switch>
       </div>
     );

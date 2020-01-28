@@ -12,6 +12,36 @@ const config = {
   appId: "1:51472587298:web:2ca0bdac5871fe26cc087b"
 };
 
+/*Permite sacar al usuario del objeto que que recuperamos
+de nuestra biblioteca de autenticación y luego lo almacenamos
+dentro de nuestra base de datos firestore.*/
+
+/*En firestore existe DocumentReference vs CollectionReference,
+cuando queramos realizar un CRUD se ocupa DocumentReference */
+
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+  if (!userAuth) return; /*Si el usuario no existe */
+  const userRef = firestore.doc(`users/${userAuth.uid}`);
+  const snapShot = await userRef.get();
+  /*Si no existe el usuario en firestore, queremos crear un nuevo registro */
+  if (!snapShot.exists) {
+    const { displayName, email } = userAuth;
+    const createdAt = new Date();
+    try {
+      await userRef.set({
+        displayName,
+        email,
+        createdAt,
+        ...additionalData
+      })
+    } catch (error) {
+      console.log("error creating user", error.message);
+    }
+  }
+  /*se retorna el objeto usuario para posteriormente ocupar su información */
+  return userRef;
+};
+
 firebase.initializeApp(config);
 
 export const auth = firebase.auth();
