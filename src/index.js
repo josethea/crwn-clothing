@@ -10,10 +10,11 @@ import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./redux/store";
 
 ReactDOM.render(
-  /*Provider nos permite tener acceso a todas las cosas relacionadas con la store(redux), el cual 
-    sirve para almacenar el estado de las variables.*/
+  // Provider nos permite tener acceso a todas las cosas relacionadas con la store(redux), el cual 
+  // sirve para almacenar el estado de las variables.
   <Provider store={store}>
     <BrowserRouter>
+      {/* permite que nuestro navegador  almacene en caché el store */}
       <PersistGate persistor={persistor}>
         <App />
       </PersistGate>
